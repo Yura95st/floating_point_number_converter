@@ -42,6 +42,59 @@ public class FloatingPointNumber
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (this.getClass() != obj.getClass())
+		{
+			return false;
+		}
+		FloatingPointNumber other = (FloatingPointNumber) obj;
+		if (this._exponent == null)
+		{
+			if (other._exponent != null)
+			{
+				return false;
+			}
+		}
+		else if (!this._exponent.equals(other._exponent))
+		{
+			return false;
+		}
+		if (this._exponentLength != other._exponentLength)
+		{
+			return false;
+		}
+		if (this._mantissa == null)
+		{
+			if (other._mantissa != null)
+			{
+				return false;
+			}
+		}
+		else if (!this._mantissa.equals(other._mantissa))
+		{
+			return false;
+		}
+		if (this._mantissaLength != other._mantissaLength)
+		{
+			return false;
+		}
+		if (this._sign != other._sign)
+		{
+			return false;
+		}
+		return true;
+	}
+
 	public List<Boolean> getExponent()
 	{
 		return new ArrayList<Boolean>(this._exponent);
@@ -65,6 +118,23 @@ public class FloatingPointNumber
 	public boolean getSign()
 	{
 		return this._sign;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result =
+			prime * result
+				+ ((this._exponent == null) ? 0 : this._exponent.hashCode());
+		result = prime * result + this._exponentLength;
+		result =
+			prime * result
+				+ ((this._mantissa == null) ? 0 : this._mantissa.hashCode());
+		result = prime * result + this._mantissaLength;
+		result = prime * result + (this._sign ? 1231 : 1237);
+		return result;
 	}
 
 	public void setExponent(List<Boolean> exponent)
