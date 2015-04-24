@@ -20,6 +20,23 @@ public class Guard
 	}
 
 	/**
+	 * Checks if the specified argument is greater or equal to zero.
+	 *
+	 * @param argument
+	 *            the argument to test
+	 * @param argumentName
+	 *            the argument's name
+	 */
+	public static void notNegative(int argument, String argumentName)
+	{
+		if (argument < 0)
+		{
+			throw new IllegalArgumentException(String.format(
+				"Argument '%1$s' can't be less than 0.", argumentName));
+		}
+	}
+
+	/**
 	 * Checks if the specified argument is not null.
 	 *
 	 * @param argument
