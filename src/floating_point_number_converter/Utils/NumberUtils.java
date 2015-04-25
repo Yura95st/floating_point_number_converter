@@ -127,6 +127,10 @@ public class NumberUtils
 			}
 		}
 
+		boolean isNormalized = exponent != 0 || number == 0;
+
+		floatingPointNumber.setIsNormilized(isNormalized);
+
 		List<Boolean> exponentBinary =
 				NumberUtils.convertToBinaryNumber(exponent, exponentLength);
 

@@ -237,6 +237,32 @@ public class NumberUtilsTests
 		testFloatingPointNumber.setExponent(Arrays.asList(false));
 		testFloatingPointNumber.setMantissa(Arrays.asList(false, false));
 		testFloatingPointNumber.setSign(false);
+		testFloatingPointNumber.setIsNormilized(false);
+
+		// Act
+		FloatingPointNumber floatingPointNumber =
+			NumberUtils.convertToFloatingPointNumber(number, exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testFloatingPointNumber, floatingPointNumber);
+	}
+
+	@Test
+	public void convertToFloatingPointNumber_NumberIsNotNormilized_ReturnsValidFloatingPointNumber()
+	{
+		// Arrange
+		double number = 0.2;
+		int exponentLength = 1;
+		int mantissaLength = 2;
+
+		FloatingPointNumber testFloatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		testFloatingPointNumber.setExponent(Arrays.asList(false));
+		testFloatingPointNumber.setMantissa(Arrays.asList(true, false));
+		testFloatingPointNumber.setSign(false);
+		testFloatingPointNumber.setIsNormilized(false);
 
 		// Act
 		FloatingPointNumber floatingPointNumber =

@@ -76,6 +76,10 @@ public class FloatingPointNumber
 		{
 			return false;
 		}
+		if (this._isNormalized != other._isNormalized)
+		{
+			return false;
+		}
 		if (this._mantissa == null)
 		{
 			if (other._mantissa != null)
@@ -132,6 +136,7 @@ public class FloatingPointNumber
 			prime * result
 				+ ((this._exponent == null) ? 0 : this._exponent.hashCode());
 		result = prime * result + this._exponentLength;
+		result = prime * result + (this._isNormalized ? 1231 : 1237);
 		result =
 			prime * result
 				+ ((this._mantissa == null) ? 0 : this._mantissa.hashCode());
