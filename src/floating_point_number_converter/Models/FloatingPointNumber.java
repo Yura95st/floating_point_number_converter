@@ -11,6 +11,8 @@ public class FloatingPointNumber
 
 	private final int _exponentLength;
 
+	private boolean _isNormalized;
+
 	private final List<Boolean> _mantissa;
 
 	private final int _mantissaLength;
@@ -26,6 +28,7 @@ public class FloatingPointNumber
 		this._mantissaLength = mantissaLength;
 
 		this._sign = false;
+		this._isNormalized = true;
 
 		this._exponent = new ArrayList<Boolean>(this._exponentLength);
 
@@ -137,6 +140,11 @@ public class FloatingPointNumber
 		return result;
 	}
 
+	public boolean isNormilized()
+	{
+		return this._isNormalized;
+	}
+
 	public void setExponent(List<Boolean> exponent)
 	{
 		Guard.notNull(exponent, "exponent");
@@ -156,6 +164,11 @@ public class FloatingPointNumber
 
 			this._exponent.add(value);
 		}
+	}
+
+	public void setIsNormilized(boolean isNormalized)
+	{
+		this._isNormalized = isNormalized;
 	}
 
 	public void setMantissa(List<Boolean> mantissa)

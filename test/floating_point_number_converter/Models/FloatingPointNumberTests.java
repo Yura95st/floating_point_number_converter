@@ -29,6 +29,7 @@ public class FloatingPointNumberTests
 		Assert.assertEquals(mantissaLength,
 			this._floatingPointNumber.getMantissaLength());
 
+		Assert.assertEquals(true, this._floatingPointNumber.isNormilized());
 		Assert.assertEquals(false, this._floatingPointNumber.getSign());
 
 		List<Boolean> exponent = this._floatingPointNumber.getExponent();
