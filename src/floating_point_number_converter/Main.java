@@ -1,8 +1,10 @@
 package floating_point_number_converter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import floating_point_number_converter.Enums.SpecialFloatingPointNumberKind;
 import floating_point_number_converter.Models.FloatingPointNumber;
 import floating_point_number_converter.Utils.NumberUtils;
 
@@ -15,6 +17,9 @@ public class Main
 
 		try
 		{
+			Main.printSpecialFloatingPointNumbers(exponentLength,
+				mantissaLength);
+
 			FloatingPointNumber floatingPointNumber = null;
 
 			System.out.println("Please, enter the decimal number:");
@@ -25,9 +30,19 @@ public class Main
 			{
 				double number = scanner.nextDouble();
 
-				floatingPointNumber =
-					NumberUtils.convertToFloatingPointNumber(number,
-						exponentLength, mantissaLength);
+				if (number == 0.0)
+				{
+					floatingPointNumber =
+						Main.getSpecialFloatingPointNumber(
+							SpecialFloatingPointNumberKind.ZeroPositive,
+							exponentLength, mantissaLength);
+				}
+				else
+				{
+					floatingPointNumber =
+						NumberUtils.convertToFloatingPointNumber(number,
+							exponentLength, mantissaLength);
+				}
 
 				Main.printFloatingPointNumber(floatingPointNumber);
 			}
@@ -53,8 +68,10 @@ public class Main
 		return string;
 	}
 
-	private static int getExponentValue(List<Boolean> exponent)
+	private static int getExponentValue(FloatingPointNumber floatingPointNumber)
 	{
+		List<Boolean> exponent = floatingPointNumber.getExponent();
+
 		String exponentBinaryString = Main.getBinaryString(exponent);
 
 		int exponentValue =
@@ -64,9 +81,12 @@ public class Main
 		return exponentValue;
 	}
 
-	private static double getMantissaValue(List<Boolean> mantissa)
+	private static double getMantissaValue(
+		FloatingPointNumber floatingPointNumber)
 	{
-		double mantissaValue = 1.0;
+		List<Boolean> mantissa = floatingPointNumber.getMantissa();
+
+		double mantissaValue = floatingPointNumber.isNormilized() ? 1.0 : 0.0;
 
 		for (int i = 0, count = mantissa.size(); i < count; i++)
 		{
@@ -86,21 +106,178 @@ public class Main
 		return signValue;
 	}
 
+	private static FloatingPointNumber getSpecialFloatingPointNumber(
+		SpecialFloatingPointNumberKind kind, int exponentLength,
+		int mantissaLength)
+	{
+		FloatingPointNumber floatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		boolean isNormalized = true;
+		boolean sign = false;
+		List<Boolean> exponent = new ArrayList<Boolean>();
+		List<Boolean> mantissa = new ArrayList<Boolean>();
+
+		switch (kind)
+		{
+			case InfinityNegative:
+			{
+				isNormalized = true;
+				sign = true;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					exponent.add(true);
+				}
+
+				break;
+			}
+
+			case InfinityPositive:
+			{
+				isNormalized = true;
+				sign = false;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					exponent.add(true);
+				}
+
+				break;
+			}
+
+			case MaxPositive:
+			{
+				isNormalized = true;
+				sign = false;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					boolean exponentBit = (i != exponentLength - 1);
+
+					exponent.add(exponentBit);
+				}
+
+				for (int i = 0; i < mantissaLength; i++)
+				{
+					mantissa.add(true);
+				}
+
+				break;
+			}
+
+			case MinNegative:
+			{
+				isNormalized = true;
+				sign = true;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					boolean exponentBit = (i != exponentLength - 1);
+
+					exponent.add(exponentBit);
+				}
+
+				for (int i = 0; i < mantissaLength; i++)
+				{
+					mantissa.add(true);
+				}
+
+				break;
+			}
+
+			case MinNotZero:
+			{
+				isNormalized = true;
+				sign = false;
+
+				for (int i = 0; i < mantissaLength; i++)
+				{
+					boolean mantissaBit = (i == mantissaLength - 1);
+
+					mantissa.add(mantissaBit);
+				}
+
+				break;
+			}
+
+			case NaNNegative:
+			{
+				isNormalized = true;
+				sign = true;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					exponent.add(true);
+				}
+
+				mantissa.add(true);
+
+				break;
+			}
+
+			case NaNPositive:
+			{
+				isNormalized = true;
+				sign = false;
+
+				for (int i = 0; i < exponentLength; i++)
+				{
+					exponent.add(true);
+				}
+
+				mantissa.add(true);
+
+				break;
+			}
+
+			case ZeroNegative:
+			{
+				isNormalized = false;
+				sign = true;
+
+				break;
+			}
+
+			case ZeroPositive:
+			{
+				isNormalized = false;
+				sign = false;
+
+				break;
+			}
+		}
+
+		floatingPointNumber.setIsNormilized(isNormalized);
+		;
+		floatingPointNumber.setSign(sign);
+		floatingPointNumber.setExponent(exponent);
+		floatingPointNumber.setMantissa(mantissa);
+
+		return floatingPointNumber;
+	}
+
 	private static void printFloatingPointNumber(
 		FloatingPointNumber floatingPointNumber)
 	{
 		boolean sign = floatingPointNumber.getSign();
-		List<Boolean> exponent = floatingPointNumber.getExponent();
-		List<Boolean> mantissa = floatingPointNumber.getMantissa();
 
-		String exponentBinaryString = Main.getBinaryString(exponent);
-		String mantissaBinaryString = Main.getBinaryString(mantissa);
+		String exponentBinaryString =
+			Main.getBinaryString(floatingPointNumber.getExponent());
+		String mantissaBinaryString =
+			Main.getBinaryString(floatingPointNumber.getMantissa());
 
 		StringBuilder stringBuilder = new StringBuilder();
 
 		stringBuilder.append(String.format(
 			"Value: [%1$s1] * [2^%2$s] * [%3$s]", Main.getSignValue(sign),
-			Main.getExponentValue(exponent), Main.getMantissaValue(mantissa)));
+			Main.getExponentValue(floatingPointNumber),
+			Main.getMantissaValue(floatingPointNumber)));
+
+		if (!floatingPointNumber.isNormilized())
+		{
+			stringBuilder.append(" (denormilized)");
+		}
 
 		stringBuilder.append(System.lineSeparator());
 
@@ -108,5 +285,21 @@ public class Main
 			sign ? "1" : "0", exponentBinaryString, mantissaBinaryString));
 
 		System.out.println(stringBuilder.toString());
+	}
+
+	private static void printSpecialFloatingPointNumbers(int exponentLength,
+		int mantissaLength)
+	{
+		for (SpecialFloatingPointNumberKind kind : SpecialFloatingPointNumberKind
+				.values())
+		{
+			System.out.println(String.format("%1$s%2$s", kind.name(),
+				System.lineSeparator()));
+
+			Main.printFloatingPointNumber(Main.getSpecialFloatingPointNumber(
+				kind, exponentLength, mantissaLength));
+
+			System.out.println();
+		}
 	}
 }
