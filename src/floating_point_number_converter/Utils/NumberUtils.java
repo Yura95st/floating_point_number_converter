@@ -20,7 +20,7 @@ public class NumberUtils
 	 */
 	public static List<Boolean> convertFractionalPartToBinaryNumber(
 		double number, int bitsLength)
-		{
+	{
 		Guard.moreThanZero(bitsLength, "bitsLength");
 
 		double fractionalPart = Math.abs(NumberUtils.getFractionalPart(number));
@@ -39,7 +39,7 @@ public class NumberUtils
 		}
 
 		return binaryNumber;
-		}
+	}
 
 	/**
 	 * Convert the specified number to it's binary representation.
@@ -97,7 +97,7 @@ public class NumberUtils
 		Guard.moreThanZero(mantissaLength, "mantissaLength");
 
 		FloatingPointNumber floatingPointNumber =
-				new FloatingPointNumber(exponentLength, mantissaLength);
+			new FloatingPointNumber(exponentLength, mantissaLength);
 
 		boolean sign = number < 0;
 
@@ -107,22 +107,31 @@ public class NumberUtils
 
 		int exponent = (int) Math.pow(2.0, exponentLength - 1) - 1;
 
-		// Normalize number
-		while (number >= 2 || (number > 0 && number < 1))
+		if (number > NumberUtils.getMaxFloatingPointNumberValue(exponentLength,
+			mantissaLength))
 		{
-			if (number >= 2)
+			exponent = (int) Math.pow(2.0, exponentLength) - 1;
+			number = 0;
+		}
+		else
+		{
+			// Normalize number
+			while (number >= 2 || (number > 0 && number < 1))
 			{
-				number /= 2.0;
-				exponent++;
-			}
-			else if (number < 1)
-			{
-				number *= 2.0;
-
-				// Prevents overflowing
-				if (exponent > 0)
+				if (number >= 2)
 				{
-					exponent--;
+					number /= 2.0;
+					exponent++;
+				}
+				else if (number < 1)
+				{
+					number *= 2.0;
+
+					// Prevents overflowing
+					if (exponent > 0)
+					{
+						exponent--;
+					}
 				}
 			}
 		}
@@ -132,13 +141,13 @@ public class NumberUtils
 		floatingPointNumber.setIsNormilized(isNormalized);
 
 		List<Boolean> exponentBinary =
-				NumberUtils.convertToBinaryNumber(exponent, exponentLength);
+			NumberUtils.convertToBinaryNumber(exponent, exponentLength);
 
 		double fractionalPart = NumberUtils.getFractionalPart(number);
 
 		List<Boolean> fractionalPartBinary =
-				NumberUtils.convertFractionalPartToBinaryNumber(fractionalPart,
-					mantissaLength);
+			NumberUtils.convertFractionalPartToBinaryNumber(fractionalPart,
+				mantissaLength);
 
 		floatingPointNumber.setExponent(exponentBinary);
 		floatingPointNumber.setMantissa(fractionalPartBinary);
@@ -172,5 +181,32 @@ public class NumberUtils
 		int integerPart = (int) number;
 
 		return integerPart;
+	}
+
+	/**
+	 * Gets the max floating point number value.
+	 *
+	 * @param exponentLength
+	 *            the exponent length
+	 * @param mantissaLength
+	 *            the mantissa length
+	 * @return the max floating point number value
+	 */
+	public static double getMaxFloatingPointNumberValue(int exponentLength,
+		int mantissaLength)
+	{
+		Guard.moreThanZero(exponentLength, "exponentLength");
+		Guard.moreThanZero(mantissaLength, "mantissaLength");
+
+		int maxExponentValue = (int) Math.pow(2.0, exponentLength - 1) - 1;
+
+		double maxValue = 0;
+
+		for (int i = 0; i <= mantissaLength; i++)
+		{
+			maxValue += Math.pow(2.0, maxExponentValue - i);
+		}
+
+		return maxValue;
 	}
 }

@@ -249,20 +249,97 @@ public class NumberUtilsTests
 	}
 
 	@Test
-	public void convertToFloatingPointNumber_NumberIsNotNormilized_ReturnsValidFloatingPointNumber()
+	public void convertToFloatingPointNumber_NumberIsEqualToNegativeInfinity_ReturnsValidFloatingPointNumber()
 	{
 		// Arrange
-		double number = 0.2;
-		int exponentLength = 1;
+		double number = Double.NEGATIVE_INFINITY;
+		int exponentLength = 2;
 		int mantissaLength = 2;
 
 		FloatingPointNumber testFloatingPointNumber =
 			new FloatingPointNumber(exponentLength, mantissaLength);
 
-		testFloatingPointNumber.setExponent(Arrays.asList(false));
-		testFloatingPointNumber.setMantissa(Arrays.asList(true, false));
+		testFloatingPointNumber.setExponent(Arrays.asList(true, true));
+		testFloatingPointNumber.setMantissa(Arrays.asList(false, false));
+		testFloatingPointNumber.setSign(true);
+
+		// Act
+		FloatingPointNumber floatingPointNumber =
+			NumberUtils.convertToFloatingPointNumber(number, exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testFloatingPointNumber, floatingPointNumber);
+	}
+
+	@Test
+	public void convertToFloatingPointNumber_NumberIsEqualToPositiveInfinity_ReturnsValidFloatingPointNumber()
+	{
+		// Arrange
+		double number = Double.POSITIVE_INFINITY;
+		int exponentLength = 2;
+		int mantissaLength = 2;
+
+		FloatingPointNumber testFloatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		testFloatingPointNumber.setExponent(Arrays.asList(true, true));
+		testFloatingPointNumber.setMantissa(Arrays.asList(false, false));
 		testFloatingPointNumber.setSign(false);
-		testFloatingPointNumber.setIsNormilized(false);
+
+		// Act
+		FloatingPointNumber floatingPointNumber =
+			NumberUtils.convertToFloatingPointNumber(number, exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testFloatingPointNumber, floatingPointNumber);
+	}
+
+	@Test
+	public void convertToFloatingPointNumber_NumberIsGreaterThanMaxValue_ReturnsValidFloatingPointNumber()
+	{
+		// Arrange
+		int exponentLength = 2;
+		int mantissaLength = 2;
+		double number =
+			NumberUtils.getMaxFloatingPointNumberValue(exponentLength,
+				mantissaLength) + 1;
+
+		FloatingPointNumber testFloatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		testFloatingPointNumber.setExponent(Arrays.asList(true, true));
+		testFloatingPointNumber.setMantissa(Arrays.asList(false, false));
+		testFloatingPointNumber.setSign(false);
+		testFloatingPointNumber.setIsNormilized(true);
+
+		// Act
+		FloatingPointNumber floatingPointNumber =
+			NumberUtils.convertToFloatingPointNumber(number, exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testFloatingPointNumber, floatingPointNumber);
+	}
+
+	@Test
+	public void convertToFloatingPointNumber_NumberIsLessThanMinValue_ReturnsValidFloatingPointNumber()
+	{
+		// Arrange
+		int exponentLength = 2;
+		int mantissaLength = 2;
+		double number =
+			-NumberUtils.getMaxFloatingPointNumberValue(exponentLength,
+				mantissaLength) - 1;
+
+		FloatingPointNumber testFloatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		testFloatingPointNumber.setExponent(Arrays.asList(true, true));
+		testFloatingPointNumber.setMantissa(Arrays.asList(false, false));
+		testFloatingPointNumber.setSign(true);
+		testFloatingPointNumber.setIsNormilized(true);
 
 		// Act
 		FloatingPointNumber floatingPointNumber =
@@ -288,6 +365,31 @@ public class NumberUtilsTests
 		testFloatingPointNumber.setMantissa(Arrays.asList(false, false, true,
 			false));
 		testFloatingPointNumber.setSign(true);
+
+		// Act
+		FloatingPointNumber floatingPointNumber =
+			NumberUtils.convertToFloatingPointNumber(number, exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testFloatingPointNumber, floatingPointNumber);
+	}
+
+	@Test
+	public void convertToFloatingPointNumber_NumberIsNotNormilized_ReturnsValidFloatingPointNumber()
+	{
+		// Arrange
+		double number = 0.2;
+		int exponentLength = 1;
+		int mantissaLength = 2;
+
+		FloatingPointNumber testFloatingPointNumber =
+			new FloatingPointNumber(exponentLength, mantissaLength);
+
+		testFloatingPointNumber.setExponent(Arrays.asList(false));
+		testFloatingPointNumber.setMantissa(Arrays.asList(true, false));
+		testFloatingPointNumber.setSign(false);
+		testFloatingPointNumber.setIsNormilized(false);
 
 		// Act
 		FloatingPointNumber floatingPointNumber =
@@ -459,5 +561,63 @@ public class NumberUtilsTests
 
 		// Assert
 		Assert.assertEquals(testIntegerPart, integerPart);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getMaxFloatingPointNumberValue_ExponentLengthIsEqualToZero_ThrowsIllegalArgumentException()
+	{
+		// Arrange
+		int mantissaLength = 1;
+
+		// Act & Assert
+		NumberUtils.getMaxFloatingPointNumberValue(0, mantissaLength);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getMaxFloatingPointNumberValue_ExponentLengthIsNegative_ThrowsIllegalArgumentException()
+	{
+		// Arrange
+		int mantissaLength = 1;
+
+		// Act & Assert
+		NumberUtils.getMaxFloatingPointNumberValue(-1, mantissaLength);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getMaxFloatingPointNumberValue_MantissaLengthIsEqualToZero_ThrowsIllegalArgumentException()
+	{
+		// Arrange
+		int exponentLength = 1;
+
+		// Act & Assert
+		NumberUtils.getMaxFloatingPointNumberValue(exponentLength, 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getMaxFloatingPointNumberValue_MantissaLengthIsNegative_ThrowsIllegalArgumentException()
+	{
+		// Arrange
+		int exponentLength = 1;
+
+		// Act & Assert
+		NumberUtils.getMaxFloatingPointNumberValue(exponentLength, -1);
+	}
+
+	@Test
+	public void getMaxFloatingPointNumberValue_ReturnsValidValue()
+	{
+		// Arrange
+		int exponentLength = 2;
+		int mantissaLength = 3;
+
+		double testMaxValue = 3.75;
+
+		// Act
+		double maxValue =
+			NumberUtils.getMaxFloatingPointNumberValue(exponentLength,
+				mantissaLength);
+
+		// Assert
+		Assert.assertEquals(testMaxValue, maxValue, 1e-32);
 	}
 }
